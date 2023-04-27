@@ -1,6 +1,6 @@
 FROM mageai/mageai:latest
 
-VOLUME /home/src
+RUN mkdir -p /home/src
 
 EXPOSE 6789
 
