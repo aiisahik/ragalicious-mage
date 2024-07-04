@@ -2,8 +2,13 @@ FROM mageai/mageai:latest
 
 RUN mkdir -p /home/src
 
-
 COPY ./requirements.txt  /home/src/my-bot-mage-ai
+
+WORKDIR /home/src/my-bot-mage-ai
+
+RUN pip install pip-tools
+RUN cat requirements.txt
+RUN pip-sync
 
 EXPOSE 6789
 
