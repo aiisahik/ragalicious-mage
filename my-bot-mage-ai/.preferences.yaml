@@ -1,2 +1,9 @@
 sync_config:
+  access_token_secret_name: mage_git_access_token
+  auth_type: https
+  branch: main
+  email: jie.z.zhou@gmail.com
+  remote_repo_link: https://github.com/aiisahik/ragalicious-mage.git
   repo_path: /home/src
+  sync_on_start: true
+  username: aiisahik
