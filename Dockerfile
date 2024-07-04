@@ -2,7 +2,9 @@ FROM mageai/mageai:latest
 
 RUN mkdir -p /home/src
 
+COPY ./my-bot-mage-ai/ /home/src/my-bot-mage-ai/
 COPY ./requirements.txt  /home/src/my-bot-mage-ai/requirements.txt
+COPY ./.gitignore /home/src/.gitignore
 
 # WORKDIR /home/src/my-bot-mage-ai
 
