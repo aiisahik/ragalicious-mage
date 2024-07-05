@@ -8,10 +8,11 @@ import pandas as pd
 from langchain_community.document_transformers import MarkdownifyTransformer
 from langchain_community.document_transformers import BeautifulSoupTransformer
 from utils.scrape import spider_scrape
+from utils.supabase import get_client
 
 md = MarkdownifyTransformer()
 bs4_transformer = BeautifulSoupTransformer()
-
+supabase_client = get_client()
 
 def find_image(markdown):
     # Regular expression to find all https:// links in the string
@@ -48,6 +49,22 @@ def clean_html(html:str) -> str:
     )
     return cleaned_html
 
+def upsert(data:list, logger):
+
+    if len(data) > 0:
+    
+        response = (
+            supabase_client.table("recipes")
+            .upsert(
+                data,
+                on_conflict="url",
+            )
+            .execute()
+        )
+        num_upserted = len(response.data)
+        logger.info(f"Upserted {num_upserted} scraped recipies")
+
+MAX_CACHE_SIZE = 20
 
 @data_loader
 def load_data(df, *args, **kwargs):
@@ -58,10 +75,11 @@ def load_data(df, *args, **kwargs):
         Anything (e.g. data frame, dictionary, array, int, str, etc.)
     """
     # Specify your data loading logic here
+    logger = kwargs.get('logger')
     scraped_recipes = []
+    upsert_cache = []
+    num_total_to_process = len(df)
     for index, row in df.iterrows(): 
-        
-        logger = kwargs.get('logger')
         logger.info(f"scraping {row['url']}")
         recipe_docs = spider_scrape(
             row['url'], 
@@ -75,19 +93,30 @@ def load_data(df, *args, **kwargs):
 
             images = find_image(markdown_receipe_docs[0].page_content)
             metadata = recipe_doc.metadata
-
-            scraped_recipes.append({
+            scraped_row = {
                 'url': row['url'],
                 'html': recipe_doc.page_content,
                 'metadata': {**metadata, "thumbnail": images[0] if len(images) else None },
                 'markdown': markdown_receipe_docs[0].page_content,
-            })
+                'status': 'scrape_success'
+            }
         else: 
+            scraped_row = {
+                'url': row['url'],
+                'status': 'scrape_failed'
+            }
             logger.warn(f"URL not found: {row['url']}")
-    
+        
+        scraped_recipes.append(scraped_row)
+        upsert_cache.append(scraped_row)
 
-    return pd.DataFrame(scraped_recipes)
-
+        if len(upsert_cache) >= MAX_CACHE_SIZE:
+            logger.info(f'{len(scraped_recipes)} / {num_total_to_process} Upserting to DB')
+            upsert(upsert_cache, logger)
+            upsert_cache = [] 
+        else: 
+            logger.info(f'{len(scraped_recipes)} / {num_total_to_process} Scraped to Cache')
+    return len(scraped_recipes)
 
 @test
 def test_output(output, *args) -> None:

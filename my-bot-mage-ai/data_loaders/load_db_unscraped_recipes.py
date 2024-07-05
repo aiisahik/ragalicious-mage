@@ -25,9 +25,16 @@ def load_data(*args, **kwargs):
         Anything (e.g. data frame, dictionary, array, int, str, etc.)
     """
     # Specify your data loading logic here
-
-    NUM_RECIPIES_TO_SCRAPE = kwargs['NUM_RECIPIES_TO_SCRAPE']
     logger = kwargs.get('logger')
+    
+    TOTAL_NUM_RECIPIES_TO_SCRAPE = kwargs['TOTAL_NUM_RECIPIES_TO_SCRAPE']
+    NUM_RECIPIES_TO_SCRAPE_PER_RUN = kwargs['NUM_RECIPIES_TO_SCRAPE_PER_RUN']
+    NUM_RECIPIES_TO_SCRAPE_PER_RUN = min(NUM_RECIPIES_TO_SCRAPE_PER_RUN, TOTAL_NUM_RECIPIES_TO_SCRAPE)
+    
+    if NUM_RECIPIES_TO_SCRAPE_PER_RUN <= 0: 
+        return None    
+    
+    logger.info(f'Fetching unscraped recipies: {NUM_RECIPIES_TO_SCRAPE_PER_RUN}/{TOTAL_NUM_RECIPIES_TO_SCRAPE}')
 
     supabase_client = get_client()
     response = (
@@ -35,7 +42,8 @@ def load_data(*args, **kwargs):
         .table("recipes")
         .select("url")
         .is_("html", "null")
-        .limit(NUM_RECIPIES_TO_SCRAPE)
+        .is_("status", "null")
+        .limit(NUM_RECIPIES_TO_SCRAPE_PER_RUN)
         .execute()
     )
     logger.info(f"Retrieved {len(response.data)} receipes to scrape")
