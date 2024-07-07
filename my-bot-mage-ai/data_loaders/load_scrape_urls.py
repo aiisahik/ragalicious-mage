@@ -7,7 +7,7 @@ import re
 import pandas as pd
 from langchain_community.document_transformers import MarkdownifyTransformer
 from langchain_community.document_transformers import BeautifulSoupTransformer
-from utils.scrape import spider_scrape
+from utils.scrape import get_spider_fn
 from utils.supabase import get_client
 
 md = MarkdownifyTransformer()
@@ -76,6 +76,8 @@ def load_data(df, *args, **kwargs):
     """
     # Specify your data loading logic here
     logger = kwargs.get('logger')
+    spider_scrape = get_spider_fn(logger)
+    
     scraped_recipes = []
     upsert_cache = []
     num_total_to_process = len(df)
