@@ -27,8 +27,8 @@ def load_data(*args, **kwargs):
     # Specify your data loading logic here
     logger = kwargs.get('logger')
     
-    TOTAL_NUM_RECIPIES_TO_SCRAPE = kwargs['TOTAL_NUM_RECIPIES_TO_SCRAPE']
-    NUM_RECIPIES_TO_SCRAPE_PER_RUN = kwargs['NUM_RECIPIES_TO_SCRAPE_PER_RUN']
+    TOTAL_NUM_RECIPIES_TO_SCRAPE = kwargs.get('TOTAL_NUM_RECIPIES_TO_SCRAPE')
+    NUM_RECIPIES_TO_SCRAPE_PER_RUN = kwargs.get('NUM_RECIPIES_TO_SCRAPE_PER_RUN')
     NUM_RECIPIES_TO_SCRAPE_PER_RUN = min(NUM_RECIPIES_TO_SCRAPE_PER_RUN, TOTAL_NUM_RECIPIES_TO_SCRAPE)
     
     if NUM_RECIPIES_TO_SCRAPE_PER_RUN <= 0: 

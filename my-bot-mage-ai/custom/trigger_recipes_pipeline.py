@@ -26,7 +26,7 @@ def transform_custom(num_upserted_this_run: int, *args, **kwargs):
     logger.info(f"Re-running with TOTAL_NUM_RECIPIES_TO_SCRAPE: {TOTAL_NUM_RECIPIES_TO_SCRAPE}")
 
     trigger_pipeline(
-        'recipes',
+        'scrape_recipes',
         variables={
             'TOTAL_NUM_RECIPIES_TO_SCRAPE': NEW_TOTAL_NUM_RECIPIES_TO_SCRAPE,
             'NUM_RECIPIES_TO_SCRAPE_PER_RUN': NUM_RECIPIES_TO_SCRAPE_PER_RUN,

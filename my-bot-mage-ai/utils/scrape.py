@@ -2,6 +2,7 @@ from langchain_community.document_loaders import SpiderLoader
 import random
 from tenacity import retry, stop_after_attempt, wait_random, before_sleep_log
 from langchain_community.document_loaders import SpiderLoader
+import hrequests
 import os
 import logging
 
@@ -41,3 +42,21 @@ def get_spider_fn(logger):
         data = loader.load()
         return data
     return spider_scrape
+
+
+def get_hrequests_fn(logger):
+    _session = hrequests.chrome.Session(os='mac')
+    @retry(
+        stop=stop_after_attempt(5), 
+        wait=wait_random(min=5, max=15),
+        before_sleep=before_sleep_log(logger, logging.WARN)
+    )
+    def hrequests_scrape(url, session):
+        resp = session.get(url)
+        if resp.status_code == 200:
+            return resp.html
+        return None
+    
+    return (hrequests_scrape, _session)
+
+    

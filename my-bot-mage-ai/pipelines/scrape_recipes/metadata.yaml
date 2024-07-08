@@ -1,0 +1,84 @@
+blocks:
+- all_upstream_blocks_executed: true
+  color: null
+  configuration:
+    dynamic: false
+  downstream_blocks:
+  - load_urls_hrequests
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: load db unscraped recipes
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_loader
+  upstream_blocks: []
+  uuid: load_db_unscraped_recipes
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - trigger_recipes_pipeline
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: load_urls_hrequests
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_loader
+  upstream_blocks:
+  - load_db_unscraped_recipes
+  uuid: load_urls_hrequests
+- all_upstream_blocks_executed: false
+  color: grey
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: trigger_recipes_pipeline
+  retry_config: null
+  status: updated
+  timeout: null
+  type: custom
+  upstream_blocks:
+  - load_urls_hrequests
+  uuid: trigger_recipes_pipeline
+cache_block_output_in_memory: false
+callbacks: []
+concurrency_config:
+  block_run_limit: 5
+  pipeline_run_limit: 1
+conditionals: []
+created_at: '2024-07-04 11:44:22.701684+00:00'
+data_integration: null
+description: null
+executor_config: {}
+executor_count: 1
+executor_type: null
+extensions: {}
+name: scrape_recipes
+notification_config: {}
+remote_variables_dir: null
+retry_config:
+  delay: 60
+  exponential_backoff: false
+  max_delay: 180
+  retries: 3
+run_pipeline_in_one_process: false
+settings:
+  triggers: null
+spark_config: {}
+tags: []
+type: python
+uuid: scrape_recipes
+variables:
+  NUM_RECIPIES_TO_SCRAPE_PER_RUN: 50
+  TOTAL_NUM_RECIPIES_TO_SCRAPE: 500
+variables_dir: /home/src/mage_data/my-bot-mage-ai
+widgets: []

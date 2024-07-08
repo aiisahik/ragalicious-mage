@@ -7,10 +7,8 @@ SUPABASE_SECRET_KEY: str = os.environ.get('SUPABASE_SECRET_KEY')
 def get_client() -> Client:
     return create_client(SUPABASE_URL, SUPABASE_SECRET_KEY)
 
-def upsert_recipes(data: list) -> int:
-
+def upsert_recipes(data: list, logger) -> int:
     supabase_client = get_client()
-        
     response = (
         supabase_client.table("recipes")
         .upsert(
@@ -19,4 +17,6 @@ def upsert_recipes(data: list) -> int:
         )
         .execute()
     )
+    num_upserted = len(response.data)
+    logger.info(f"Upserted {num_upserted} scraped recipies")
     return len(response.data)
