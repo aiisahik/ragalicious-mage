@@ -175,11 +175,9 @@ node_modules
 .npmrc
 
 # Scratch files
-scratch*
 /mage_data*
 *secrets*.json
 secrets-*.json
-your-first-project
 
 
 # mage 
