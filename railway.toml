@@ -1,9 +1,10 @@
 [build]
 builder = "DOCKERFILE"
-buildCommand = "docker build --no-cache --progress=plain ."
+buildCommand = "docker build --progress=plain ."
 dockerfilePath = "Dockerfile"
 buildEnvironment = "V2"
 watchPatterns = ["requirements.txt", "Dockerfile"]
+
 
 [deploy]
 runtime = "V2"
