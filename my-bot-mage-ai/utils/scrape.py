@@ -55,6 +55,8 @@ def get_hrequests_fn(logger):
         resp = session.get(url)
         if resp.status_code == 200:
             return resp.html
+        print(f"status_code: {resp.status_code}")
+        print(resp.content)
         return None
     
     return (hrequests_scrape, _session)

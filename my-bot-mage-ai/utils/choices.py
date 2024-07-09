@@ -10,3 +10,13 @@ class ParseTypes(Enum):
     Ingredients = 'ingredients'
     Nutrition = 'nutrition'
     Tags = 'tags'
+
+
+
+class TagTypes(Enum):
+    Occasion = "Occasion"
+    Cuisine = "Cuisine"
+    Ingredient = "Ingredient"
+    Difficulty = "Difficulty"
+    Equipment = "Equipment"
+    Meal = "Meal"

@@ -2,19 +2,38 @@ blocks:
 - all_upstream_blocks_executed: true
   color: null
   configuration: {}
-  downstream_blocks: []
+  downstream_blocks:
+  - transform_prep_descriptions
+  - load_db_tags
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: python
-  name: scratch_qdrant
+  name: load_db_parsed_recipes
   retry_config: null
   status: updated
   timeout: null
-  type: scratchpad
+  type: data_loader
   upstream_blocks: []
-  uuid: scratch_qdrant
-- all_upstream_blocks_executed: true
+  uuid: load_db_parsed_recipes
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - transform_prep_descriptions
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: load_db_tags
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_loader
+  upstream_blocks:
+  - load_db_parsed_recipes
+  uuid: load_db_tags
+- all_upstream_blocks_executed: false
   color: null
   configuration: {}
   downstream_blocks: []
@@ -22,40 +41,27 @@ blocks:
   executor_type: local_python
   has_callback: false
   language: python
-  name: scratch_vector_retriever
+  name: transform prep descriptions
   retry_config: null
-  status: updated
+  status: failed
   timeout: null
-  type: scratchpad
-  upstream_blocks: []
-  uuid: scratch_vector_retriever
-- all_upstream_blocks_executed: true
-  color: null
-  configuration: {}
-  downstream_blocks: []
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: scratch parse
-  retry_config: null
-  status: updated
-  timeout: null
-  type: scratchpad
-  upstream_blocks: []
-  uuid: scratch_parse
+  type: transformer
+  upstream_blocks:
+  - load_db_parsed_recipes
+  - load_db_tags
+  uuid: transform_prep_descriptions
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
 conditionals: []
-created_at: '2024-07-08 13:59:35.075414+00:00'
+created_at: '2024-07-09 12:09:00.423870+00:00'
 data_integration: null
 description: null
 executor_config: {}
 executor_count: 1
 executor_type: null
 extensions: {}
-name: playground
+name: populate_vector_db
 notification_config: {}
 remote_variables_dir: null
 retry_config: {}
@@ -65,6 +71,9 @@ settings:
 spark_config: {}
 tags: []
 type: python
-uuid: playground
+uuid: populate_vector_db
+variables:
+  NUM_RECIPES_PER_RUN: 10
+  TOTAL_NUM_RECIPES: 1000
 variables_dir: /home/src/mage_data/my-bot-mage-ai
 widgets: []

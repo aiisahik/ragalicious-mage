@@ -9,7 +9,7 @@ from utils.choices import ParseTypes
 from bs4 import BeautifulSoup
 import pandas as pd
 
-MAX_CACHE_SIZE = 10
+MAX_CACHE_SIZE = 5
 
 @transformer
 def transform(df, *args, **kwargs):
@@ -48,7 +48,7 @@ def transform(df, *args, **kwargs):
                 'num_ratings': get_snippet(soup, ParseTypes.NumRatings, markdown=False),
                 'time': get_snippet(soup, ParseTypes.TotalTime, markdown=True),
                 'features': {
-                    'tags': get_snippet(soup, ParseTypes.Tags, markdown=False),
+                    'tags': get_snippet(soup, ParseTypes.Tags, markdown=True),
                 },
                 'status': 'parse_success'
             }
@@ -61,16 +61,18 @@ def transform(df, *args, **kwargs):
         parsed_data.append(parsed_row_data)
         cached_data.append(parsed_row_data)
         total_processed += 1
-        if len(cached_data) > MAX_CACHE_SIZE: 
+        if len(cached_data) >= MAX_CACHE_SIZE: 
             num_upserted = upsert_recipes(cached_data, logger)
             total_upserted += num_upserted
             cached_data = []
     if len(cached_data) > 0: 
         num_upserted = upsert_recipes(cached_data, logger)
     NEW_TOTAL_NUM_RECIPES_TO_PARSE = TOTAL_NUM_RECIPES_TO_PARSE - total_upserted
-    return 'parse_features', {
-        "TOTAL_NUM_RECIPES_TO_PARSE": NEW_TOTAL_NUM_RECIPES_TO_PARSE
-    }, f"parse_features {NEW_TOTAL_NUM_RECIPES_TO_PARSE}"
+    if NEW_TOTAL_NUM_RECIPES_TO_PARSE > 0:
+        return 'parse_features', {
+            "TOTAL_NUM_RECIPES_TO_PARSE": NEW_TOTAL_NUM_RECIPES_TO_PARSE
+        }, f"parse_features {NEW_TOTAL_NUM_RECIPES_TO_PARSE}"
+    return None, None, None
 
 
 @test

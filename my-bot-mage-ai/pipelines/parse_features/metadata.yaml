@@ -73,6 +73,7 @@ tags: []
 type: python
 uuid: parse_features
 variables:
-  TOTAL_NUM_RECIPES_TO_PARSE: 500
+  NUM_RECIPES_TO_PARSE_PER_RUN: 200
+  TOTAL_NUM_RECIPES_TO_PARSE: 5000
 variables_dir: /home/src/mage_data/my-bot-mage-ai
 widgets: []

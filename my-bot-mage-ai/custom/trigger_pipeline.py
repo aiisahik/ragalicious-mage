@@ -6,23 +6,32 @@ if 'test' not in globals():
 from mage_ai.orchestration.triggers.api import trigger_pipeline
 
 @custom
-def transform_custom(pipeline_name, pipeline_variables, schedule_name, *args, **kwargs):
+def transform_custom(combined_inputs, *args, **kwargs):
+
+    pipeline_name, pipeline_variables, schedule_name = combined_inputs
+
     """
     args: The output from any upstream parent blocks (if applicable)
 
     Returns:
         Anything (e.g. data frame, dictionary, array, int, str, etc.)
     """
-    # Specify your custom logic here
-    trigger_pipeline(
-        pipeline_name,
-        variables=variables,
-        check_status=False,
-        error_on_failure=False,
-        poll_interval=60,
-        schedule_name=schedule_name,  # Enter a unique name to create a new trigger each time
-        verbose=True,
-    )
+
+    logger = kwargs.get('logger')
+    if pipeline_name:
+        logger.info(f"Triggering {pipeline_name} - {schedule_name}")
+        # Specify your custom logic here
+        trigger_pipeline(
+            pipeline_name,
+            variables=pipeline_variables,
+            check_status=False,
+            error_on_failure=False,
+            poll_interval=60,
+            schedule_name=schedule_name,  # Enter a unique name to create a new trigger each time
+            verbose=True,
+        )
+    else: 
+        logger.info(f"Ending")
 
     return 1
 
