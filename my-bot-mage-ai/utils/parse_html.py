@@ -7,6 +7,7 @@ from .choices import ParseTypes
 
 
 def get_nutrition(soup):
+    print('get_nutrition')
     tag = soup.find(class_=re.compile("^ingredients_buttons__"))
     if tag:
         tag = tag.find(class_=re.compile("^popover_popover-body--message__"))
@@ -15,22 +16,29 @@ def get_nutrition(soup):
     return str(tag) if tag else None
 
 def get_ingredients(soup):
+    print('get_ingredients')
     tag_ingredients = soup.find(class_=re.compile("^ingredients_ingredients__"))
-    for el in tag_ingredients.find_all("span"): 
-        el.append(" ")
-    tag_ingredients.find(class_=re.compile("^ingredients_buttons__")).decompose()
+    if tag_ingredients:
+        for el in tag_ingredients.find_all("span"): 
+            el.append(" ")
+        tag_ingredients.find(class_=re.compile("^ingredients_buttons__")).decompose()
   
     return str(tag_ingredients)
 
 
 def get_tags(soup):
+    print('get_tags')
     tag = soup.find(class_=re.compile("^creditstags_tags__"))
     res = tag.find_all('a')
     return res
 
 def get_total_time(soup) -> int:
-    time_text = str(soup.find(class_=re.compile("^stats_cookingTimeTable__")).find(class_='pantry--ui'))
-    if time_text:
+    print('get_total_time')
+    tag = soup.find(class_=re.compile("^stats_cookingTimeTable__"))
+    if tag: 
+        tag = tag.find(class_='pantry--ui')
+    if tag:
+        time_text = str(tag)
         # Define the regex patterns for hours and minutes
         hour_pattern = re.compile(r'(\d+)\s*hour')
         minute_pattern = re.compile(r'(\d+)\s*minute')
@@ -48,7 +56,9 @@ def get_total_time(soup) -> int:
     return None
 
 def get_rating(soup):
-    tag = soup.find(class_=re.compile("^ratingssection_ratingsInfoText__")).find(class_="pantry--ui-lg-strong")
+    tag = soup.find(class_=re.compile("^ratingssection_ratingsInfoText__"))
+    if tag: 
+        tag = tag.find(class_="pantry--ui-lg-strong")
     if tag:
         rating_str = str(tag).replace(' out of 5', '')
         rating_num_str = md(rating_str)
@@ -79,6 +89,8 @@ BS4_PARSER_MAP = {
 
 def get_snippet(soup, parse_type: ParseTypes, markdown: bool=True) -> str:
     copied_soup = copy.deepcopy(soup) ## need to make sure the original soup is not mutated
+    if not copied_soup:
+        return None
     parser_fn = BS4_PARSER_MAP[parse_type.value]
     if not parser_fn: 
         raise ValueError(f'unable to find {parse_type}')

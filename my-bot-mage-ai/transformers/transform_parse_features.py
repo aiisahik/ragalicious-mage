@@ -26,12 +26,16 @@ def transform(df, *args, **kwargs):
     Returns:
         Anything (e.g. data frame, dictionary, array, int, str, etc.)
     """
+    logger = kwargs.get('logger')
+    TOTAL_NUM_RECIPES_TO_PARSE = kwargs.get('TOTAL_NUM_RECIPES_TO_PARSE')
 
     parsed_data = []
     cached_data = []
     total_upserted = 0
+    total_processed = 0
+    total_to_process = len(df)
     for index, row in df.iterrows():
-        print('parsing', row['url'])
+        logger.info(f"{total_processed+1}/{total_to_process} - {row['url']}")
         soup = BeautifulSoup(row['html'], 'html.parser')
         try: 
             parsed_row_data = {
@@ -43,23 +47,30 @@ def transform(df, *args, **kwargs):
                 'rating': get_snippet(soup, ParseTypes.Rating, markdown=False),
                 'num_ratings': get_snippet(soup, ParseTypes.NumRatings, markdown=False),
                 'time': get_snippet(soup, ParseTypes.TotalTime, markdown=True),
-                'status': 'parsed'
+                'features': {
+                    'tags': get_snippet(soup, ParseTypes.Tags, markdown=False),
+                },
+                'status': 'parse_success'
             }
-            print(parsed_row_data)
         except: 
             parsed_row_data = {
                 'url': row['url'],
                 'status': 'parse_failed'
             }
+        
         parsed_data.append(parsed_row_data)
         cached_data.append(parsed_row_data)
-
+        total_processed += 1
         if len(cached_data) > MAX_CACHE_SIZE: 
-            num_upserted = upsert_recipes(cached_data)
-            total_upserted += 0
+            num_upserted = upsert_recipes(cached_data, logger)
+            total_upserted += num_upserted
             cached_data = []
-
-    return pd.DataFrame(parsed_data)
+    if len(cached_data) > 0: 
+        num_upserted = upsert_recipes(cached_data, logger)
+    NEW_TOTAL_NUM_RECIPES_TO_PARSE = TOTAL_NUM_RECIPES_TO_PARSE - total_upserted
+    return 'parse_features', {
+        "TOTAL_NUM_RECIPES_TO_PARSE": NEW_TOTAL_NUM_RECIPES_TO_PARSE
+    }, f"parse_features {NEW_TOTAL_NUM_RECIPES_TO_PARSE}"
 
 
 @test
