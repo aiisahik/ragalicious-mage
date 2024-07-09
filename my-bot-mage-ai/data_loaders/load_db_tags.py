@@ -15,12 +15,16 @@ def load_data(df_recipes, *args, **kwargs):
     Returns:
         Anything (e.g. data frame, dictionary, array, int, str, etc.)
     """
+    logger = kwargs['logger']
     tags_to_fetch = []
     for index, row in df_recipes.iterrows():
-        recipe_tags = row['features']['tags']
-        if recipe_tags.any():
-            tags_to_fetch += list(recipe_tags)
-    # Specify your data loading logic here
+        if isinstance(row['features'], dict) and 'tags' in row['features']:
+            recipe_tags = row['features']['tags']
+            if recipe_tags:
+                tags_to_fetch += list(recipe_tags)
+    tags_to_fetch = list(set(tags_to_fetch))
+    logger.info("tags_to_fetch: ")
+    logger.info(tags_to_fetch)
     supabase_client = get_client()
     response = (
         supabase_client

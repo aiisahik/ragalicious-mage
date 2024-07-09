@@ -11,12 +11,12 @@ blocks:
   language: python
   name: load_db_parsed_recipes
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: data_loader
   upstream_blocks: []
   uuid: load_db_parsed_recipes
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration: {}
   downstream_blocks:
@@ -36,20 +36,93 @@ blocks:
 - all_upstream_blocks_executed: false
   color: null
   configuration: {}
-  downstream_blocks: []
+  downstream_blocks:
+  - export_to_qdrant_cloud
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: python
   name: transform prep descriptions
   retry_config: null
-  status: failed
+  status: updated
   timeout: null
   type: transformer
   upstream_blocks:
   - load_db_parsed_recipes
   - load_db_tags
   uuid: transform_prep_descriptions
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - export_upsert_recipe_to_db
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: export_to_qdrant_cloud
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - transform_prep_descriptions
+  uuid: export_to_qdrant_cloud
+- all_upstream_blocks_executed: false
+  color: null
+  configuration:
+    file_path: data_exporters/export_upsert_recipe_to_db.py
+    file_source:
+      path: data_exporters/export_upsert_recipe_to_db.py
+  downstream_blocks:
+  - populate_vector_db_prepare_trigger
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: export_upsert_recipe_to_db
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - export_to_qdrant_cloud
+  uuid: export_upsert_recipe_to_db
+- all_upstream_blocks_executed: false
+  color: grey
+  configuration: {}
+  downstream_blocks:
+  - trigger_pipeline
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: populate_vector_db_prepare_trigger
+  retry_config: null
+  status: updated
+  timeout: null
+  type: custom
+  upstream_blocks:
+  - export_upsert_recipe_to_db
+  uuid: populate_vector_db_prepare_trigger
+- all_upstream_blocks_executed: false
+  color: teal
+  configuration:
+    file_source:
+      path: custom/trigger_pipeline.py
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: trigger_pipeline
+  retry_config: null
+  status: not_executed
+  timeout: null
+  type: custom
+  upstream_blocks:
+  - populate_vector_db_prepare_trigger
+  uuid: trigger_pipeline
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
@@ -73,7 +146,8 @@ tags: []
 type: python
 uuid: populate_vector_db
 variables:
-  NUM_RECIPES_PER_RUN: 10
+  NUM_RECIPES_PER_RUN: 200
+  TARGET_COLLECTION_NAME: recipe_descriptions
   TOTAL_NUM_RECIPES: 1000
 variables_dir: /home/src/mage_data/my-bot-mage-ai
 widgets: []

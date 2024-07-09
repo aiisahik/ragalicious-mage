@@ -20,3 +20,4 @@ class TagTypes(Enum):
     Difficulty = "Difficulty"
     Equipment = "Equipment"
     Meal = "Meal"
+    Diet = "Diet"
