@@ -20,6 +20,7 @@ def load_data(*args, **kwargs):
     logger = kwargs.get('logger')
     
     TOTAL_NUM_RECIPES = kwargs.get('TOTAL_NUM_RECIPES')
+    # TOTAL_NUM_RECIPES = 10
     NUM_RECIPES_PER_RUN = kwargs.get('NUM_RECIPES_PER_RUN')
 
     num_recipes_to_query = min(NUM_RECIPES_PER_RUN, TOTAL_NUM_RECIPES)
@@ -29,12 +30,16 @@ def load_data(*args, **kwargs):
     response = (
         supabase_client
         .table("recipes")
-        .select("id, url, metadata, num_ratings, rating, features, md_description, md_ingredients")
+        .select("id, url, metadata, num_ratings, rating, features, md_description, md_ingredients, md_nutrition")
         .eq("status", "parse_success")
         .gte('num_ratings', 10)
         .gte('rating', 4)
         .not_.is_("md_description", "null")
         .not_.eq("md_description", "")
+        .not_.is_("md_nutrition", "null")
+        .not_.eq("md_nutrition", "")
+        .not_.is_("md_ingredients", "null")
+        .not_.eq("md_ingredients", "")
         .order("num_ratings", desc=True)
         .limit(num_recipes_to_query)
         .execute()
