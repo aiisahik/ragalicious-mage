@@ -22,6 +22,7 @@ def load_data(*args, **kwargs):
     TOTAL_NUM_RECIPES_TO_PARSE = kwargs.get('TOTAL_NUM_RECIPES_TO_PARSE')
     # TOTAL_NUM_RECIPES_TO_PARSE = 2
     NUM_RECIPES_TO_PARSE_PER_RUN = kwargs.get('NUM_RECIPES_TO_PARSE_PER_RUN')
+    RECIPE_STATUS_INPUT = kwargs.get('RECIPE_STATUS_INPUT')
 
     num_recipes_to_query = min(NUM_RECIPES_TO_PARSE_PER_RUN, TOTAL_NUM_RECIPES_TO_PARSE)
     logger.info(f'Fetching unscraped recipies: {num_recipes_to_query}/{TOTAL_NUM_RECIPES_TO_PARSE}')
@@ -31,8 +32,7 @@ def load_data(*args, **kwargs):
         supabase_client
         .table("recipes")
         .select("html, url")
-        .eq("status", "scrape_success")
-        .is_("md_description", "null")
+        .eq("status", RECIPE_STATUS_INPUT)
         .limit(num_recipes_to_query)
         .execute()
     )

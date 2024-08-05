@@ -80,6 +80,11 @@ def get_nutrition_chunk(row, recipe_tag_type_collection) -> str:
     output += f"""\n\n{row['md_nutrition']}"""
     return output
 
+def remove_empty_list(l: list):
+    if isinstance(l, list) and len(l) > 0:
+        return l
+    return None
+
 @transformer
 def transform(df_recipes, df_tags, *args, **kwargs):
     """
@@ -105,6 +110,15 @@ def transform(df_recipes, df_tags, *args, **kwargs):
                 'url': row['url'],
                 'num_ratings': row['num_ratings'],
                 'rating': row['rating'],
+                'title': row['metadata'].get('title'),
+                'diet': remove_empty_list(recipe_tag_type_collection[TagTypes.Diet.value]),
+                'ingredients': remove_empty_list(recipe_tag_type_collection[TagTypes.Ingredient.value]),
+                'meal': remove_empty_list(recipe_tag_type_collection[TagTypes.Meal.value]),
+                'equipment': remove_empty_list(recipe_tag_type_collection[TagTypes.Equipment.value]),
+                'occasion': remove_empty_list(recipe_tag_type_collection[TagTypes.Occasion.value]),
+                'cuisine': remove_empty_list(recipe_tag_type_collection[TagTypes.Cuisine.value]),
+                'time': row['time'],
+                
             }
         })
     

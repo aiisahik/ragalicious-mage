@@ -30,10 +30,11 @@ def load_data(*args, **kwargs):
     response = (
         supabase_client
         .table("recipes")
-        .select("id, url, metadata, num_ratings, rating, features, md_description, md_ingredients, md_nutrition")
-        .eq("status", "parse_success")
+        .select("id, status, url, metadata, num_ratings, rating, time, features, md_description, md_ingredients, md_nutrition")
+        .in_("status", ["vector_success", "parse_success", "vector_metadata_success"])
         .gte('num_ratings', 10)
         .gte('rating', 4)
+        .gt('time', 0)
         .not_.is_("md_description", "null")
         .not_.eq("md_description", "")
         .not_.is_("md_nutrition", "null")

@@ -37,7 +37,7 @@ blocks:
   color: null
   configuration: {}
   downstream_blocks:
-  - export_to_qdrant_cloud
+  - export_to_myscale_db
   executor_config: null
   executor_type: local_python
   has_callback: false
@@ -51,23 +51,6 @@ blocks:
   - load_db_parsed_recipes
   - load_db_tags
   uuid: transform_prep_descriptions
-- all_upstream_blocks_executed: false
-  color: null
-  configuration: {}
-  downstream_blocks:
-  - export_upsert_recipe_to_db
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: export_to_qdrant_cloud
-  retry_config: null
-  status: updated
-  timeout: null
-  type: data_exporter
-  upstream_blocks:
-  - transform_prep_descriptions
-  uuid: export_to_qdrant_cloud
 - all_upstream_blocks_executed: false
   color: null
   configuration:
@@ -86,7 +69,7 @@ blocks:
   timeout: null
   type: data_exporter
   upstream_blocks:
-  - export_to_qdrant_cloud
+  - export_to_myscale_db
   uuid: export_upsert_recipe_to_db
 - all_upstream_blocks_executed: false
   color: grey
@@ -123,6 +106,25 @@ blocks:
   upstream_blocks:
   - populate_vector_db_prepare_trigger
   uuid: trigger_pipeline
+- all_upstream_blocks_executed: false
+  color: null
+  configuration:
+    file_source:
+      path: data_exporters/export_to_myscale_db.py
+  downstream_blocks:
+  - export_upsert_recipe_to_db
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: export_to_myscale_db
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - transform_prep_descriptions
+  uuid: export_to_myscale_db
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
@@ -134,7 +136,7 @@ executor_config: {}
 executor_count: 1
 executor_type: null
 extensions: {}
-name: populate_vector_db
+name: populate_vector_db_myscale
 notification_config: {}
 remote_variables_dir: null
 retry_config: {}
@@ -144,7 +146,7 @@ settings:
 spark_config: {}
 tags: []
 type: python
-uuid: populate_vector_db
+uuid: populate_vector_db_myscale
 variables:
   NUM_RECIPES_PER_RUN: 200
   TARGET_COLLECTION_NAME: recipe_descriptions

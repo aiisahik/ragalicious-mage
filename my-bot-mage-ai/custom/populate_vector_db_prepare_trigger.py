@@ -18,9 +18,9 @@ def transform_custom(num_recipes_populated, *args, **kwargs):
     NEW_TOTAL_NUM_RECIPES = max(0, TOTAL_NUM_RECIPES - num_recipes_populated)
 
     if NEW_TOTAL_NUM_RECIPES > 0:
-        return 'populate_vector_db', {
+        return 'populate_vector_db_myscale', {
                 "TOTAL_NUM_RECIPES": NEW_TOTAL_NUM_RECIPES
-            }, f"populate_vector_db {NEW_TOTAL_NUM_RECIPES}"
+            }, f"populate_vector_db_myscale {NEW_TOTAL_NUM_RECIPES}"
     return None, {}, 'done'
 
 
