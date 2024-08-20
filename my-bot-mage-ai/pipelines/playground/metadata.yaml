@@ -29,21 +29,6 @@ blocks:
   type: scratchpad
   upstream_blocks: []
   uuid: scratch_vector_retriever
-- all_upstream_blocks_executed: true
-  color: null
-  configuration: {}
-  downstream_blocks: []
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: scratch parse
-  retry_config: null
-  status: updated
-  timeout: null
-  type: scratchpad
-  upstream_blocks: []
-  uuid: scratch_parse
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}

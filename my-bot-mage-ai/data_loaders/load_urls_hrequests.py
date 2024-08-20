@@ -66,32 +66,31 @@ def load_data(df, *args, **kwargs):
             row['url'], 
             session=hrequests_session
         )
-        scraped_row = None
+
         if html_obj:
             title = html_obj.find("title").text
             main_obj = html_obj.find("main")
-            if main_obj:
-                cleaned_main_obj = clean_html(main_obj)
-                markdown = md(cleaned_main_obj.html, strip=['a']) 
+            cleaned_main_obj = clean_html(main_obj)
+            markdown = md(cleaned_main_obj.html, strip=['a']) 
 
-                images = find_image(markdown)
-                # metadata = recipe_doc.metadata
-                scraped_row = {
-                    'url': row['url'],
-                    'html': main_obj.html,
-                    'metadata': {
-                        "thumbnail": images[0] if len(images) else None,
-                        "title": title,
-                    },
-                    'markdown': markdown,
-                    'status': 'scrape_success'
-                }
-        if not scraped_row:
+            images = find_image(markdown)
+            # metadata = recipe_doc.metadata
+            scraped_row = {
+                'url': row['url'],
+                'html': main_obj.html,
+                'metadata': {
+                    "thumbnail": images[0] if len(images) else None,
+                    "title": title,
+                },
+                'markdown': markdown,
+                'status': 'scrape_success'
+            }
+        else: 
             scraped_row = {
                 'url': row['url'],
                 'status': 'scrape_failed'
             }
-            logger.warn(f"Scrape failed: {row['url']}")
+            logger.warn(f"URL not found: {row['url']}")
         
         scraped_recipes.append(scraped_row)
         upsert_cache.append(scraped_row)

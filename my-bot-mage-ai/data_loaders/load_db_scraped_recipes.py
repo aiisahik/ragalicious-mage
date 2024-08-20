@@ -19,21 +19,18 @@ def load_data(*args, **kwargs):
     # Specify your data loading logic here
     logger = kwargs.get('logger')
     
-    TOTAL_NUM_RECIPES_TO_PARSE = kwargs.get('TOTAL_NUM_RECIPES_TO_PARSE')
-    # TOTAL_NUM_RECIPES_TO_PARSE = 2
-    NUM_RECIPES_TO_PARSE_PER_RUN = kwargs.get('NUM_RECIPES_TO_PARSE_PER_RUN')
-    RECIPE_STATUS_INPUT = kwargs.get('RECIPE_STATUS_INPUT')
-
-    num_recipes_to_query = min(NUM_RECIPES_TO_PARSE_PER_RUN, TOTAL_NUM_RECIPES_TO_PARSE)
-    logger.info(f'Fetching unscraped recipies: {num_recipes_to_query}/{TOTAL_NUM_RECIPES_TO_PARSE}')
+    TOTAL_NUM_RECIPES_TO_PARSE = kwargs.get('TOTAL_NUM_RECIPES_TO_PARSE') or 1
+    
+    # logger.info(f'Fetching unscraped recipies: {NUM_RECIPIES_TO_SCRAPE_PER_RUN}/{TOTAL_NUM_RECIPIES_TO_SCRAPE}')
 
     supabase_client = get_client()
     response = (
         supabase_client
         .table("recipes")
         .select("html, url")
-        .eq("status", RECIPE_STATUS_INPUT)
-        .limit(num_recipes_to_query)
+        .eq("status", "scrape_success")
+        .is_("md_description", "null")
+        .limit(TOTAL_NUM_RECIPES_TO_PARSE)
         .execute()
     )
     logger.info(f"Retrieved {len(response.data)} receipes to scrape")

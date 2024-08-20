@@ -20,20 +20,17 @@ def export_data(df, *args, **kwargs):
     logger = kwargs.get('logger')
 
     if len(df) > 0:
-        records_to_upsert = df.to_dict(orient='records')
+        scraped_records = df.to_dict(orient='records')
         
         response = (
             supabase_client.table("recipes")
             .upsert(
-                records_to_upsert,
+                scraped_records,
                 on_conflict="url",
             )
             .execute()
         )
-        logger.info("Upserted {len(records_to_upsert)} to recipe table")
-        return len(records_to_upsert)
-        
-    return 0
+        print(response.data)
     # Specify your data exporting logic here
 
 
